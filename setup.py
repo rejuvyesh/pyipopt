@@ -12,11 +12,12 @@
 # for my linux distribution was buggy,
 # so by the time you read this the bugs have probably been fixed
 # and you will want to specify a different directory here.
-IPOPT_DIR = '/usr/local/'
 
 import os
 from distutils.core import setup
 from distutils.extension import Extension
+
+IPOPT_DIR = os.environ.get('IPOPT_DIR', '/usr/local')
 
 # NumPy is much easier to install than pyipopt,
 # and is a pyipopt dependency, so require it here.
@@ -24,12 +25,14 @@ from distutils.extension import Extension
 import numpy
 numpy_include = numpy.get_include()
 
+
 # I personally do not need support for lib64 but I'm keeping it in the code.
 def get_ipopt_lib():
     for lib_suffix in ('lib', 'lib64'):
         d = os.path.join(IPOPT_DIR, lib_suffix)
         if os.path.isdir(d):
             return d
+
 
 IPOPT_LIB = get_ipopt_lib()
 if IPOPT_LIB is None:
@@ -43,30 +46,30 @@ FILES = ['src/callback.c', 'src/pyipoptcoremodule.c']
 # that line was causing my pyipopt install to not work.
 # Also I am using coinmumps instead of coinhsl.
 pyipopt_extension = Extension(
-        'pyipoptcore',
-        FILES,
-        #extra_link_args=['-Wl,--rpath','-Wl,'+ IPOPT_LIB],
-        library_dirs=[IPOPT_LIB],
-        libraries=[
-            'ipopt', 'coinblas',
-            #'coinhsl',
-            'coinmumps',
-            'coinmetis',
-            'coinlapack','dl','m',
-            ],
-        include_dirs=[numpy_include, IPOPT_INC],
-        )
+    'pyipoptcore',
+    FILES,
+    #extra_link_args=['-Wl,--rpath','-Wl,'+ IPOPT_LIB],
+    library_dirs=[IPOPT_LIB],
+    libraries=[
+        'ipopt',
+        'coinblas',
+        #'coinhsl',
+        'coinmumps',
+        'coinmetis',
+        'coinlapack',
+        'dl',
+        'm',
+    ],
+    include_dirs=[numpy_include, IPOPT_INC],)
 
 setup(
-        name="pyipopt",
-        version="0.8",
-        description="An IPOPT connector for Python",
-        author="Eric Xu",
-        author_email="xu.mathena@gmail.com",
-        url="https://github.com/xuy/pyipopt",
-        packages=['pyipopt'],
-        package_dir={'pyipopt' : 'pyipoptpackage'},
-        ext_package='pyipopt',
-        ext_modules=[pyipopt_extension],
-        )
-
+    name="pyipopt",
+    version="0.8",
+    description="An IPOPT connector for Python",
+    author="Eric Xu",
+    author_email="xu.mathena@gmail.com",
+    url="https://github.com/xuy/pyipopt",
+    packages=['pyipopt'],
+    package_dir={'pyipopt': 'pyipoptpackage'},
+    ext_package='pyipopt',
+    ext_modules=[pyipopt_extension],)
