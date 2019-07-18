@@ -45,7 +45,7 @@ install_ipopt_mac() {
   cd -
 }
 
-if [[ "$OSTYPE" == "linx-gnu" ]]; then
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
   install_ipopt "$HOME/local/ipopt/"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   install_ipopt_mac "$HOME/local/ipopt/"
